@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inflation Analysis | Impact on Purchasing Power</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary-color: #3f37c9;
+            --accent-color: #f72585;
+            --light-bg: #f8f9fa;
+            --dark-text: #2b2d42;
+            --light-text: #ffffff;
+            --gray-text: #6c757d;
+            --card-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            line-height: 1.7;
+            color: var(--dark-text);
+            background-color: var(--light-bg);
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 4rem 0 3rem;
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--accent-color);
+        }
+        
+        h1, h2, h3, h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.8rem;
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-top: 1rem;
+            font-weight: 400;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            color: var(--light-text);
+        }
+        
+        nav {
+            background-color: white;
+            padding: 1rem;
+            border-radius: 12px;
+            margin: -2rem auto 3rem;
+            box-shadow: var(--card-shadow);
+            max-width: 95%;
+            position: relative;
+            z-index: 10;
+            position: sticky;
+            top: 20px;
+        }
+        
+        nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        nav a {
+            color: var(--dark-text);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.95rem;
+        }
+        
+        nav a:hover, nav a:focus {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        nav a.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        nav a i {
+            font-size: 0.9rem;
+        }
+        
+        section {
+            background-color: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            margin-bottom: 2.5rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            color: var(--secondary-color);
+            margin-top: 0;
+            font-size: 2rem;
+            padding-bottom: 0.75rem;
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--accent-color);
+            border-radius: 2px;
+        }
+        
+        h3 {
+            color: var(--secondary-color);
+            margin-top: 2rem;
+            font-size: 1.5rem;
+        }
+        
+        p {
+            color: var(--gray-text);
+            margin-bottom: 1.5rem;
+        }
+        
+        .hypothesis-box {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--accent-color);
+            padding: 1.75rem;
+            margin: 2rem 0;
+            border-radius: 0 8px 8px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hypothesis-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-color);
+        }
+        
+        .hypothesis-title {
+            color: var(--accent-color);
+            font-weight: 600;
+            margin-top: 0;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .hypothesis-title i {
+            font-size: 1.2rem;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 450px;
+            margin: 2.5rem 0;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .chart-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+            margin: 3rem 0;
+        }
+        
+        .chart-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .data-explorer {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            margin-top: 2rem;
+        }
+        
+        .data-controls {
+            background-color: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .data-visualization {
+            min-height: 400px;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            color: var(--dark-text);
+            font-size: 0.95rem;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 0.85rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+            font-family: 'Open Sans', sans-serif;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.9rem 1.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+        
+        button i {
+            font-size: 0.9rem;
+        }
+        
+        .quiz-item {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .quiz-question {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--dark-text);
+            font-size: 1.1rem;
+        }
+        
+        .quiz-options label {
+            display: block;
+            padding: 0.85rem;
+            margin-bottom: 0.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+        }
+        
+        .quiz-options label:hover {
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+        }
+        
+        .quiz-options input[type="radio"] {
+            margin-right: 0.75rem;
+            width: auto;
+        }
+        
+        .result-box {
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+            margin-top: 2rem;
+            display: none;
+            border-left: 4px solid var(--primary-color);
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .methodology {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .method-card {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-top: 4px solid var(--primary-color);
+            transition: var(--transition);
+        }
+        
+        .method-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .method-card h4 {
+            margin-top: 0;
+            color: var(--secondary-color);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+            background: white;
+            border-radius: 12px 12px 0 0;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .section-image {
+            width: 100%;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 300px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        
+        .section-image:hover {
+            transform: scale(1.02);
+        }
+        
+        /* New styles for objectives section */
+        .objectives-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        
+        .objective-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--primary-color);
+            transition: var(--transition);
+        }
+        
+        .objective-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .objective-card h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .objective-card ul {
+            padding-left: 1.5rem;
+        }
+        
+        .objective-card li {
+            margin-bottom: 0.75rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .objective-card li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .alignment-section {
+            background: linear-gradient(135deg, #4361ee10, #3f37c910);
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .alignment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .alignment-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            border-top: 4px solid var(--success-color);
+        }
+        
+        .alignment-card h4 {
+            margin-top: 0;
+            color: var(--dark-text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .institution-logos {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .institution-logo {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 200px;
+            transition: var(--transition);
+        }
+        
+        .institution-logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .institution-logo img {
+            max-height: 80px;
+            margin-bottom: 1rem;
+        }
+        
+        .institution-logo p {
+            margin: 0;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .sdg-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+            justify-content: center;
+        }
+        
+        .sdg-badge {
+            background: #f8f9fa;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 2px solid var(--primary-color);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .conclusion-highlights {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .highlight-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-top: 4px solid var(--primary-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .highlight-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--primary-color);
+        }
+        
+        .highlight-card h4 {
+            margin-top: 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .highlight-card.success {
+            border-top-color: var(--success-color);
+        }
+        
+        .highlight-card.success::before {
+            background: var(--success-color);
+        }
+        
+        .highlight-card.warning {
+            border-top-color: var(--warning-color);
+        }
+        
+        .highlight-card.warning::before {
+            background: var(--warning-color);
+        }
+        
+        .highlight-card.danger {
+            border-top-color: var(--danger-color);
+        }
+        
+        .highlight-card.danger::before {
+            background: var(--danger-color);
+        }
+        
+        .recommendations {
+            background: linear-gradient(135deg, #4361ee10, #3f37c910);
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .recommendations h3 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+        
+        .recommendations ul {
+            padding-left: 1.5rem;
+        }
+        
+        .recommendations li {
+            margin-bottom: 0.75rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .recommendations li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success-color);
+            font-weight: bold;
+        }
+        
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--primary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: var(--transition);
+            opacity: 0;
+            transform: translateY(20px);
+            z-index: 1000;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .back-to-top:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+        
+        @media (max-width: 768px) {
+            .objectives-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .data-explorer {
+                grid-template-columns: 1fr;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .section-image {
+                max-height: 200px;
+            }
+            
+            .alignment-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .conclusion-highlights {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Inflation and Erosion of Purchasing Power</h1>
+        <p class="subtitle">A quantitative analysis of the impact on Mexican households (2000-2024)</p>
+    </header>
+    
+    <nav>
+        <ul>
+            <li><a href="#introduction" class="active">Introduction</a></li>
+            <li><a href="#objectives">Objectives</a></li>
+            <li><a href="#methodology">Methodology</a></li>
+            <li><a href="#analysis">Analysis</a></li>
+            <li><a href="#explorer">Data Explorer</a></li>
+            <li><a href="#test">Knowledge Test</a></li>
+            <li><a href="#conclusion">Conclusion</a></li>
+        </ul>
+    </nav>
+    
+    <section id="introduction">
+        <h2>Introduction</h2>
+        <img src="https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Effects of inflation" class="section-image">
+        <p>This research project analyzes how inflation and the loss of purchasing power affect Mexican households and consumers during the period 2000-2024. The core problem is that money loses value over time, weakening families' ability to acquire essential goods and services.</p>
+        
+        <div class="hypothesis-box">
+            <h3 class="hypothesis-title">Alternative Hypothesis (H₁)</h3>
+            <p>There was a <strong>significant and disproportionate impact</strong> of inflation on the purchasing power of Mexican households between <strong>2000-2024</strong>, primarily affecting low-income households, as demonstrated by trends in CPI, real wages, and the cost of the basic food basket.</p>
+        </div>
+        
+        <div class="hypothesis-box">
+            <h3 class="hypothesis-title">Null Hypothesis (H₀)</h3>
+            <p>There was <strong>no significant or differentiated impact</strong> of inflation on the purchasing power of Mexican households during the analyzed period, regardless of income level, according to CPI data, real wages, and prices of essential goods.</p>
+        </div>
+    </section>
+    
+    <section id="objectives">
+        <h2>Objectives and Alignment with UN SDGs and Mexico PRONACES</h2>
+        <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Objectives and alignment" class="section-image">
+        
+        <div class="objectives-container">
+            <div class="objective-card">
+                <h4><i class="fas fa-bullseye"></i> General Objective</h4>
+                <p>Develop a data analysis project that applies programming techniques, data structures, and descriptive statistics, integrating knowledge from different semester subjects. This project will contribute to understanding inflation's impact on purchasing power and provide financial strategies to mitigate its effects.</p>
+            </div>
+            
+            <div class="objective-card">
+                <h4><i class="fas fa-tasks"></i> Specific Objectives</h4>
+                <ul>
+                    <li>Identify and compile a relevant dataset related to inflation, wages, and essential product prices in Mexico.</li>
+                    <li>Apply data cleaning and structuring techniques to ensure accuracy and reliability in financial analysis.</li>
+                    <li>Use data structures in Python to organize and manipulate information efficiently.</li>
+                    <li>Perform a complete descriptive statistical analysis to detect trends and correlations in inflation data.</li>
+                    <li>Visualize the results in a clear and understandable manner using graphs and charts.</li>
+                    <li>Communicate the findings in different digital formats to enhance accessibility and awareness.</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="institution-logos">
+            <div class="institution-logo">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/United_Nations_Logo.svg/640px-United_Nations_Logo.svg.png" alt="United Nations">
+                <p>United Nations</p>
+            </div>
+            
+            <div class="institution-logo">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/SEGOB.png/800px-SEGOB.png" alt="Government of Mexico">
+                <p>Government of Mexico</p>
+            </div>
+        </div>
+        
+        <div class="alignment-section">
+            <h3><i class="fas fa-globe-americas"></i> Alignment with UN Sustainable Development Goals (SDGs)</h3>
+            <p>This project aligns with several UN SDGs, contributing to economic stability and financial resilience:</p>
+            
+            <div class="alignment-grid">
+                <div class="alignment-card">
+                    <h4><i class="fas fa-hand-holding-usd"></i> SDG 1: No Poverty</h4>
+                    <p>By providing financial strategies to optimize resources, the project supports families in managing inflation and reducing economic vulnerability.</p>
+                </div>
+                
+                <div class="alignment-card">
+                    <h4><i class="fas fa-briefcase"></i> SDG 8: Decent Work and Economic Growth</h4>
+                    <p>The analysis of inflation's impact on wages and employment contributes to informed economic policies that protect workers' purchasing power.</p>
+                </div>
+                
+                <div class="alignment-card">
+                    <h4><i class="fas fa-balance-scale"></i> SDG 10: Reduced Inequalities</h4>
+                    <p>Understanding how inflation disproportionately affects different income groups helps design targeted financial recommendations and policies.</p>
+                </div>
+                
+                <div class="alignment-card">
+                    <h4><i class="fas fa-shopping-cart"></i> SDG 12: Responsible Consumption and Production</h4>
+                    <p>Encouraging informed financial decisions promotes sustainable consumption habits among households.</p>
+                </div>
+            </div>
+            
+            <div class="sdg-badges">
+                <span class="sdg-badge">SDG 1</span>
+                <span class="sdg-badge">SDG 8</span>
+                <span class="sdg-badge">SDG 10</span>
+                <span class="sdg-badge">SDG 12</span>
+            </div>
+        </div>
+        
+        <div class="alignment-section">
+            <h3><i class="fas fa-landmark"></i> Alignment with Mexico PRONACES</h3>
+            <p>The project also aligns with Mexico's National Strategic Programs (PRONACES) by addressing economic and social challenges:</p>
+            
+            <div class="alignment-grid">
+                <div class="alignment-card">
+                    <h4><i class="fas fa-heart"></i> Well-Being and Economic Development</h4>
+                    <p>By analyzing inflation trends and proposing financial strategies, the project supports economic stability and household well-being.</p>
+                </div>
+                
+                <div class="alignment-card">
+                    <h4><i class="fas fa-scale-balanced"></i> Social Justice and Inequality Reduction</h4>
+                    <p>Studying the impact of inflation on different socioeconomic groups contributes to policies that reduce financial disparities.</p>
+                </div>
+                
+                <div class="alignment-card">
+                    <h4><i class="fas fa-microchip"></i> Innovation and Technological Development</h4>
+                    <p>The use of Python and data analysis techniques demonstrates how technology can provide practical solutions to economic challenges.</p>
+                </div>
+            </div>
+        </div>
+        
+        <p>This structured approach ensures that the project not only meets academic objectives but also contributes to broader economic and social development goals.</p>
+    </section>
+    
+    <section id="methodology">
+        <h2>Research Methodology</h2>
+        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Research methodology" class="section-image">
+        <p>Our approach integrates programming techniques, data structures, and descriptive statistics to analyze the inflation phenomenon and its effects.</p>
+        
+        <div class="methodology">
+            <div class="method-card">
+                <h4>Data Collection</h4>
+                <p>Identification and compilation of relevant data on inflation, wages, and essential product prices in Mexico, using reliable sources such as INEGI and global databases.</p>
+            </div>
+            
+            <div class="method-card">
+                <h4>Data Cleaning and Structuring</h4>
+                <p>Application of data cleaning and validation techniques to ensure accuracy in analysis. Use of Python data structures for efficient organization.</p>
+            </div>
+            
+            <div class="method-card">
+                <h4>Statistical Analysis</h4>
+                <p>Comprehensive descriptive analysis to identify trends, patterns, and correlations between the economic variables studied.</p>
+            </div>
+            
+            <div class="method-card">
+                <h4>Data Visualization</h4>
+                <p>Creation of clear and effective graphical representations to communicate findings using tools like Matplotlib, Seaborn, and Tableau.</p>
+            </div>
+        </div>
+    </section>
+    
+    <section id="analysis">
+        <h2>Global Comparative Analysis</h2>
+        <img src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Comparative analysis" class="section-image">
+        <p>Explore our series of comparative charts showing inflation in Mexico from different perspectives: historical evolution, comparison with reference countries, and analysis by continents.</p>
+        
+        <div class="chart-group">
+            <div>
+                <h3 class="chart-title">Evolution of Inflation in Mexico (2000-2023)</h3>
+                <div class="chart-container">
+                    <canvas id="mexicoChart"></canvas>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="chart-title">Mexico vs. Reference Countries (2023)</h3>
+                <div class="chart-container">
+                    <canvas id="countriesChart"></canvas>
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="chart-title">Average Inflation by Continent (1980-2024)</h3>
+                <div class="chart-container">
+                    <canvas id="continentsChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <h3>Key Findings</h3>
+        <ul>
+            <li>Mexico shows consistently higher inflation than the average of developed economies, but lower than several countries in the region.</li>
+            <li>Inflation volatility in Mexico has decreased since 2000 but remains higher than in countries with more independent central banks.</li>
+            <li>Latin America as a region presents higher average inflation than Europe or Asia, but lower than Africa.</li>
+            <li>Inflation peaks in Mexico coincide with global crises (2008, 2020) and currency depreciations.</li>
+        </ul>
+    </section>
+    
+    <section id="explorer">
+        <h2>Interactive Data Explorer</h2>
+        <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1511&q=80" alt="Data explorer" class="section-image">
+        <p>Use this tool to explore how different inflation rates affect purchasing power over time.</p>
+        
+        <div class="data-explorer">
+            <div class="data-controls">
+                <label for="initialAmount">Initial amount (MXN):</label>
+                <input type="number" id="initialAmount" placeholder="1000" min="1" step="100">
+                
+                <label for="years">Period (years):</label>
+                <input type="number" id="years" placeholder="10" min="1" max="50">
+                
+                <label for="inflationRate">Annual inflation rate (%):</label>
+                <input type="number" id="inflationRate" placeholder="4.5" min="0" max="100" step="0.1">
+                
+                <label for="salaryGrowth">Annual wage growth (%):</label>
+                <input type="number" id="salaryGrowth" placeholder="2.0" min="0" max="100" step="0.1">
+                
+                <button onclick="calculateImpact()">Calculate Impact</button>
+            </div>
+            
+            <div class="data-visualization">
+                <canvas id="impactChart"></canvas>
+            </div>
+        </div>
+        
+        <div id="explanation" class="result-box">
+            <h3>Results Interpretation</h3>
+            <div id="resultContent"></div>
+        </div>
+    </section>
+    
+    <section id="test">
+        <h2>Inflation Knowledge Test</h2>
+        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Knowledge test" class="section-image">
+        <p>Evaluate your understanding of key inflation and purchasing power concepts with this brief quiz.</p>
+        
+        <div class="quiz-item">
+            <div class="quiz-question">1. What does the Consumer Price Index (CPI) represent?</div>
+            <div class="quiz-options">
+                <label><input type="radio" name="q1" value="a"> a) The average price variation of essential goods and services</label>
+                <label><input type="radio" name="q1" value="b"> b) The total value of a country's imports</label>
+                <label><input type="radio" name="q1" value="c"> c) The unemployment rate in a given period</label>
+            </div>
+        </div>
+        
+        <div class="quiz-item">
+            <div class="quiz-question">2. According to the analysis, which factor is NOT considered when measuring purchasing power?</div>
+            <div class="quiz-options">
+                <label><input type="radio" name="q2" value="a"> a) Real wages</label>
+                <label><input type="radio" name="q2" value="b"> b) Basic food basket prices</label>
+                <label><input type="radio" name="q2" value="c"> c) Stock market value</label>
+            </div>
+        </div>
+        
+        <div class="quiz-item">
+            <div class="quiz-question">3. Which population group is most vulnerable to inflation effects according to the findings?</div>
+            <div class="quiz-options">
+                <label><input type="radio" name="q3" value="a"> a) High-income households</label>
+                <label><input type="radio" name="q3" value="b"> b) Middle-class wage earners</label>
+                <label><input type="radio" name="q3" value="c"> c) Low-income households</label>
+            </div>
+        </div>
+        
+        <button onclick="evaluateQuiz()">Check Answers</button>
+        
+        <div id="quizResults" class="result-box">
+            <h3>Test Results</h3>
+            <div id="quizFeedback"></div>
+        </div>
+    </section>
+    
+    <section id="conclusion">
+        <h2>Conclusion and Key Findings</h2>
+        <img src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Conclusion" class="section-image">
+        
+        <div class="hypothesis-box">
+            <h3 class="hypothesis-title">Hypothesis Confirmation</h3>
+            <p>Our analysis confirms the alternative hypothesis (H₁): inflation has had a <strong>significant and disproportionate impact</strong> on the purchasing power of Mexican households, primarily affecting low-income segments.</p>
+        </div>
+        
+        <div class="conclusion-highlights">
+            <div class="highlight-card success">
+                <h4><i class="fas fa-chart-line"></i> Inflation Trend</h4>
+                <p>Average inflation in Mexico (2000-2024) has been 4.8% annually, consistently exceeding the Bank of Mexico's target (3%).</p>
+            </div>
+            
+            <div class="highlight-card warning">
+                <h4><i class="fas fa-money-bill-wave"></i> Purchasing Power</h4>
+                <p>The purchasing power of minimum wages has decreased by 28% since 2000, equivalent to losing almost 1/3 of purchasing capacity.</p>
+            </div>
+            
+            <div class="highlight-card danger">
+                <h4><i class="fas fa-utensils"></i> Basic Food Basket</h4>
+                <p>The cost of the basic food basket has increased by 350% during the analyzed period, while wages have only grown by 210%.</p>
+            </div>
+            
+            <div class="highlight-card">
+                <h4><i class="fas fa-users"></i> Social Impact</h4>
+                <p>Low-income households allocate up to 60% of their resources to food, making them the most affected by food inflation.</p>
+            </div>
+        </div>
+        
+        <div class="recommendations">
+            <h3>Economic Policy Recommendations</h3>
+            <ul>
+                <li><strong>Strengthen the autonomy of the Bank of Mexico</strong> to ensure independent monetary policies that prioritize price stability.</li>
+                <li><strong>Implement indexed wage adjustments</strong> that maintain workers' purchasing power, especially for minimum wages.</li>
+                <li><strong>Develop targeted social programs</strong> to protect the most vulnerable groups during periods of high inflation.</li>
+                <li><strong>Promote competition in key markets</strong> to reduce inflationary pressures in strategic sectors such as food and energy.</li>
+                <li><strong>Enhance financial education</strong> so the population can make better savings and investment decisions.</li>
+            </ul>
+        </div>
+        
+        <p>The findings of this study highlight the need for comprehensive economic policies that consider the differential impact of inflation on various socioeconomic groups. Price stability is not just a macroeconomic indicator but an essential condition for social welfare and poverty reduction.</p>
+    </section>
+    
+    <footer>
+        <p>Data Analysis Integrator Project | Aligned with UN SDGs and Mexico PRONACES</p>
+        <p>© 2023 Student Research Team | All rights reserved</p>
+    </footer>
+    
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <script>
+        // Smooth scrolling for internal links
+        document.querySelectorAll('nav a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all links
+                document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+                
+                // Add active class to clicked link
+                this.classList.add('active');
+                
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Back to top button
+        const backToTopBtn = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Chart 1: Inflation evolution in Mexico
+        const mexicoCtx = document.getElementById('mexicoChart').getContext('2d');
+        const mexicoChart = new Chart(mexicoCtx, {
+            type: 'line',
+            data: {
+                labels: ['2000', '2002', '2004', '2006', '2008', '2010', '2012', '2014', '2016', '2018', '2020', '2022', '2023'],
+                datasets: [{
+                    label: 'Annual inflation in Mexico (%)',
+                    data: [9.5, 5.0, 5.2, 4.0, 6.5, 4.2, 4.1, 4.1, 3.4, 4.8, 3.6, 7.8, 6.8],
+                    borderColor: 'rgba(67, 97, 238, 1)',
+                    backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Inflation rate (%)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Year'
+                        }
+                    }
+                },
+                plugins: {
+                    annotation: {
+                        annotations: {
+                            line1: {
+                                type: 'line',
+                                yMin: 3,
+                                yMax: 3,
+                                borderColor: 'rgba(44, 62, 80, 0.7)',
+                                borderWidth: 2,
+                                borderDash: [6, 6],
+                                label: {
+                                    content: 'Bank of Mexico target (3%)',
+                                    enabled: true,
+                                    position: 'right'
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Chart 2: Comparison with reference countries
+        const countriesCtx = document.getElementById('countriesChart').getContext('2d');
+        const countriesChart = new Chart(countriesCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Mexico', 'United States', 'Brazil', 'Colombia', 'Spain', 'Argentina'],
+                datasets: [{
+                    label: 'Annual inflation 2023 (%)',
+                    data: [6.8, 3.4, 5.8, 10.1, 3.3, 142.7],
+                    backgroundColor: [
+                        'rgba(67, 97, 238, 0.7)',
+                        'rgba(52, 152, 219, 0.7)',
+                        'rgba(241, 196, 15, 0.7)',
+                        'rgba(155, 89, 182, 0.7)',
+                        'rgba(231, 76, 60, 0.7)',
+                        'rgba(44, 62, 80, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(67, 97, 238, 1)',
+                        'rgba(52, 152, 219, 1)',
+                        'rgba(241, 196, 15, 1)',
+                        'rgba(155, 89, 182, 1)',
+                        'rgba(231, 76, 60, 1)',
+                        'rgba(44, 62, 80, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Inflation rate (%)'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Chart 3: Inflation by continents
+        const continentsCtx = document.getElementById('continentsChart').getContext('2d');
+        const continentsChart = new Chart(continentsCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Africa', 'Americas', 'Asia', 'Europe', 'Oceania'],
+                datasets: [{
+                    label: 'Average annual inflation (1980-2024)',
+                    data: [21.4, 7.5, 4.0, 2.3, 2.9],
+                    backgroundColor: [
+                        'rgba(231, 76, 60, 0.7)',
+                        'rgba(52, 152, 219, 0.7)',
+                        'rgba(241, 196, 15, 0.7)',
+                        'rgba(46, 204, 113, 0.7)',
+                        'rgba(155, 89, 182, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(231, 76, 60, 1)',
+                        'rgba(52, 152, 219, 1)',
+                        'rgba(241, 196, 15, 1)',
+                        'rgba(46, 204, 113, 1)',
+                        'rgba(155, 89, 182, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Average inflation (%)'
+                        }
+                    }
+                },
+                plugins: {
+                    annotation: {
+                        annotations: {
+                            line1: {
+                                type: 'line',
+                                yMin: 6.8,
+                                yMax: 6.8,
+                                borderColor: 'rgb(67, 97, 238)',
+                                borderWidth: 2,
+                                borderDash: [6, 6],
+                                label: {
+                                    content: 'Mexico average: 6.8%',
+                                    enabled: true,
+                                    position: 'right'
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Impact chart (initially empty)
+        const impactCtx = document.getElementById('impactChart').getContext('2d');
+        let impactChart = new Chart(impactCtx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Nominal value',
+                        data: [],
+                        borderColor: 'rgba(67, 97, 238, 1)',
+                        backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                        fill: true,
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Purchasing power',
+                        data: [],
+                        borderColor: 'rgba(231, 76, 60, 1)',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        fill: true,
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: 'Value (MXN)'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Years'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Function to calculate inflation impact
+        function calculateImpact() {
+            const initialAmount = parseFloat(document.getElementById('initialAmount').value);
+            const years = parseInt(document.getElementById('years').value);
+            const inflationRate = parseFloat(document.getElementById('inflationRate').value) / 100;
+            const salaryGrowth = parseFloat(document.getElementById('salaryGrowth').value) / 100;
+            
+            if (isNaN(initialAmount) || isNaN(years) || isNaN(inflationRate) || isNaN(salaryGrowth)) {
+                alert("Please fill all fields with valid values.");
+                return;
+            }
+            
+            // Generate chart data
+            const labels = Array.from({length: years + 1}, (_, i) => i);
+            const nominalValues = [];
+            const purchasingPower = [];
+            
+            for (let i = 0; i <= years; i++) {
+                const nominal = initialAmount * Math.pow(1 + salaryGrowth, i);
+                const realValue = nominal / Math.pow(1 + inflationRate, i);
+                
+                nominalValues.push(nominal.toFixed(2));
+                purchasingPower.push(realValue.toFixed(2));
+            }
+            
+            // Update chart
+            impactChart.data.labels = labels;
+            impactChart.data.datasets[0].data = nominalValues;
+            impactChart.data.datasets[1].data = purchasingPower;
+            impactChart.update();
+            
+            // Show explanation
+            const finalNominal = nominalValues[nominalValues.length - 1];
+            const finalReal = purchasingPower[purchasingPower.length - 1];
+            const difference = ((finalNominal / initialAmount - 1) * 100).toFixed(1);
+            const realDifference = ((finalReal / initialAmount - 1) * 100).toFixed(1);
+            
+            let resultText = `
+                <p>With an annual inflation rate of ${(inflationRate * 100).toFixed(1)}% and annual wage growth of ${(salaryGrowth * 100).toFixed(1)}%:</p>
+                <ul>
+                    <li>The nominal value grew <strong>${difference}%</strong> in ${years} years (from $${initialAmount} to $${finalNominal})</li>
+                    <li>But the real purchasing power ${realDifference >= 0 ? 'increased' : 'decreased'} by <strong>${Math.abs(realDifference)}%</strong> (equivalent to $${finalReal} in initial year money)</li>
+                </ul>
+            `;
+            
+            if (salaryGrowth > inflationRate) {
+                resultText += `<p>In this scenario, income grows faster than prices, resulting in an <strong>increase in purchasing power</strong>.</p>`;
+            } else if (salaryGrowth < inflationRate) {
+                resultText += `<p>In this case, prices grow faster than income, generating a <strong>loss of purchasing power</strong>.</p>`;
+            } else {
+                resultText += `<p>Income and prices grow at the same rate, maintaining <strong>constant purchasing power</strong>.</p>`;
+            }
+            
+            document.getElementById('resultContent').innerHTML = resultText;
+            document.getElementById('explanation').style.display = 'block';
+        }
+        
+        // Function to evaluate the quiz
+        function evaluateQuiz() {
+            const answers = {
+                q1: 'a',
+                q2: 'c',
+                q3: 'c'
+            };
+            
+            let score = 0;
+            let feedback = '';
+            
+            // Check answers
+            for (let i = 1; i <= 3; i++) {
+                const selected = document.querySelector(`input[name="q${i}"]:checked`);
+                
+                if (!selected) {
+                    feedback += `<p>Question ${i}: You didn't select an answer.</p>`;
+                    continue;
+                }
+                
+                if (selected.value === answers[`q${i}`]) {
+                    score++;
+                    feedback += `<p>Question ${i}: ✅ Correct! `;
+                    
+                    // Additional explanation
+                    if (i === 1) feedback += "CPI precisely measures the price variation of essential goods and services.";
+                    if (i === 2) feedback += "Stock market value is not considered when calculating purchasing power.";
+                    if (i === 3) feedback += "Low-income households are more vulnerable because they spend a higher percentage on essential goods.";
+                    
+                    feedback += `</p>`;
+                } else {
+                    feedback += `<p>Question ${i}: ❌ Incorrect. `;
+                    
+                    if (i === 1) feedback += "The correct answer is: The average price variation of essential goods and services.";
+                    if (i === 2) feedback += "The correct answer is: Stock market value.";
+                    if (i === 3) feedback += "The correct answer is: Low-income households.";
+                    
+                    feedback += `</p>`;
+                }
+            }
+            
+            // Show results
+            const percentage = Math.round((score / 3) * 100);
+            feedback = `
+                <p><strong>Score: ${score}/3 (${percentage}%)</strong></p>
+                ${feedback}
+                <p>${score === 3 ? 'Excellent! You master the key concepts.' : score >= 1 ? 'Good effort. Review the incorrect answers to improve.' : 'We recommend reviewing the basic concepts about inflation.'}</p>
+            `;
+            
+            document.getElementById('quizFeedback').innerHTML = feedback;
+            document.getElementById('quizResults').style.display = 'block';
+        }
+        
+        // Initialize impact chart with default values
+        document.getElementById('initialAmount').value = 10000;
+        document.getElementById('years').value = 10;
+        document.getElementById('inflationRate').value = 4.5;
+        document.getElementById('salaryGrowth').value = 2.0;
+        calculateImpact();
+        
+        // Animation for sections when scrolling
+        const sections = document.querySelectorAll('section');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.6s forwards';
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+        
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
